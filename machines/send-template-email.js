@@ -59,6 +59,11 @@ module.exports = {
       friendlyName: "Merge Tags",
       description: "Content to be placed within template merge tags.",
       example: [{'name': 'FNAME', 'content': 'First Name'}]
+    },
+    attachments: {
+      friendlyName: "Attachment Tags",
+      description: "File attachments for sending with the email.",
+      example: [{'type': 'text/plain', 'name': 'myFile.txt', 'content': 'base64 encoded URL'}]
     }
   },
 
@@ -77,6 +82,18 @@ module.exports = {
 
     // Base url for API requests.
     var BASE_URL = 'https://mandrillapp.com/api/1.0';
+
+    var attachments = [];
+    if(inputs.attachments && inputs.attachments.length > 0) {
+      for (var i = 0; i < inputs.attachments.length; i++) {
+        var attchment = inputs.attachments[i];
+        attachments.push({
+          type: attchment.type,
+          name: attchment.name,
+          content: attchment.content
+        });
+      }
+    }
 
     request.post({
       url: BASE_URL + '/messages/send-template.json',
@@ -99,7 +116,8 @@ module.exports = {
             rcpt: inputs.toEmail,
             vars: inputs.mergeVars
           }],
-          auto_html: true
+          auto_html: true,
+          attachments: attachments
         }
       },
       json: true
